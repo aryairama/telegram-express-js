@@ -207,6 +207,20 @@ const validate = (method) => {
   if (method === 'read') {
     return [rulesRead(), validateResult];
   }
+  if (method === 'forgot-password') {
+    return [
+      body('email')
+        .notEmpty()
+        .withMessage('email is required')
+        .bail()
+        .isEmail()
+        .withMessage('The email you entered is not correct'),
+      validateResult,
+    ];
+  }
+  if (method === 'reset-password') {
+    return [rulesCreatePassword(), validateResult];
+  }
 };
 
 export default validate;

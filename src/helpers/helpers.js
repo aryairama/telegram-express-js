@@ -2,6 +2,7 @@ import path from 'path';
 import checkFolder from 'fs';
 import mailer from '../configs/nodemailer.js';
 import templateVerifEmail from '../templates/verifEmail.js';
+import templateResetPassword from '../templates/resetPassword.js';
 
 const response = (res, status, statusCode, message, data) => {
   res.status(statusCode).json({
@@ -69,6 +70,19 @@ const sendVerifEmailRegister = async (token, emailTo, name) => {
   }
 };
 
+const sendResetPassword = async (token, emailTo, name) => {
+  try {
+    await mailer.sendMail({
+      from: `"Ceo Telegram" <${process.env.NODEMAILER_AUTH_USER}>`,
+      to: emailTo,
+      subject: 'Reset Password',
+      html: templateResetPassword(token, name),
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
   response,
   responseError,
@@ -77,4 +91,5 @@ export {
   createFolderImg,
   responseCookie,
   sendVerifEmailRegister,
+  sendResetPassword,
 };

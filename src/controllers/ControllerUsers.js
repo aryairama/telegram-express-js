@@ -13,6 +13,7 @@ import {
   responsePagination,
   responseCookie,
   sendVerifEmailRegister,
+  sendResetPassword,
 } from '../helpers/helpers.js';
 
 const register = async (req, res, next) => {
@@ -209,6 +210,51 @@ const refreshToken = async (req, res, next) => {
   }
 };
 
+const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await usersModel.checkExistUser(email, 'email');
+    if (user.length > 0) {
+      const id = user[0].user_id;
+      const token = Jwt.sign({ id, email }, process.env.FORGOT_PASSWORD_TOKEN_SECRET, { expiresIn: '24h' });
+      redis.set(`JWTFORGOT-${id}`, token);
+      response(res, 'Success', 200, 'Successfully create token, check email for reset password');
+      await sendResetPassword(token, email, user[0].name);
+    } else {
+      response(res, 'Not found', 404, 'Email not found', {});
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    Jwt.verify(req.body.tokenPassword, process.env.FORGOT_PASSWORD_TOKEN_SECRET, (err, decode) => {
+      if (err) {
+        return responseError(res, 'Reset password failed', 403, 'Reset password failed', {});
+      }
+      redis.get(`JWTFORGOT-${decode.id}`, async (error, result) => {
+        if (result !== null) {
+          const salt = await bcrypt.genSalt(10);
+          const data = {
+            password: await bcrypt.hash(req.body.password, salt),
+          };
+          const updatePassword = await usersModel.updateUser(data, decode.id);
+          if (updatePassword.affectedRows) {
+            redis.del(`JWTFORGOT-${decode.id}`);
+            return response(res, 'success', 200, 'Successfully reset password', []);
+          }
+        } else {
+          responseError(res, 'Reset password failed', 403, 'Reset password failed', {});
+        }
+      });
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   verifEmail,
@@ -217,4 +263,6 @@ export default {
   login,
   logout,
   refreshToken,
+  forgotPassword,
+  resetPassword,
 };

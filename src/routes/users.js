@@ -12,6 +12,8 @@ router
   .post('/verifemail', ControllerUsers.verifEmail)
   .delete('/logout', Auth, ControllerUsers.logout)
   .post('/login', ValidationUsers('login'), ControllerUsers.login)
-  .post('/refreshtoken', ControllerUsers.refreshToken);
+  .post('/refreshtoken', ControllerUsers.refreshToken)
+  .post('/forgot-password', ValidationUsers('forgot-password'), ControllerUsers.forgotPassword)
+  .post('/reset-password', ValidationUsers('reset-password'), ControllerUsers.resetPassword);
 
 export default router;
