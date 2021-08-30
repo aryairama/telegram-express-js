@@ -47,38 +47,30 @@ const rulesUpdateUser = () => [
     .bail()
     .isLength({ min: 3, max: 225 })
     .withMessage('name length between 4 to 255'),
+  body('username')
+    .optional({ checkFalsy: true })
+    .isLength({ min: 3, max: 225 })
+    .withMessage('username length between 4 to 255')
+    .bail()
+    .custom(async (value) => {
+      const existingUsername = await usersModel.checkExistUser(value, 'username');
+      if (existingUsername.length > 0) {
+        throw new Error('Username already registered');
+      }
+      return true;
+    }),
   body('phone_number')
     .isNumeric()
     .withMessage('phone number must be number')
     .bail()
     .isLength({ min: 10, max: 15 })
     .withMessage('phone number must be more than 10 and less than 15 digits'),
-  body('gender')
+  body('bio')
     .notEmpty()
-    .withMessage('gender is required')
-    .bail()
-    .isIn(['female', 'male'])
-    .withMessage('the value of the gender must be female or male'),
-  body('date_of_birth')
-    .notEmpty()
-    .withMessage('date of birth is required')
-    .bail()
-    .isDate()
-    .withMessage('date of birth must be date'),
-  body('address')
-    .notEmpty()
-    .withMessage('address is required')
+    .withMessage('bio is required')
     .bail()
     .isLength({ min: 10 })
-    .withMessage('address must be more than 10 characters'),
-  body('roles')
-    .optional({ checkFalsy: true })
-    .isIn(['admin', 'user'])
-    .withMessage('the value of the roles must be admin or user'),
-  body('account_status')
-    .optional({ checkFalsy: true })
-    .isIn(['active', 'delete'])
-    .withMessage('the value of the account_status must be active or delete'),
+    .withMessage('bio must be more than 10 characters'),
 ];
 
 const rulesCreatePassword = () => [

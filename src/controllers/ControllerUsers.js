@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import path from 'path';
 import fs from 'fs/promises';
-import checkFolder from 'fs';
 import Jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import usersModel from '../models/users.js';
@@ -10,10 +9,11 @@ import { genAccessToken, genRefreshToken, genVerifEmailToken } from '../helpers/
 import {
   response,
   responseError,
-  responsePagination,
+  // responsePagination,
   responseCookie,
   sendVerifEmailRegister,
   sendResetPassword,
+  createFolderImg,
 } from '../helpers/helpers.js';
 
 const register = async (req, res, next) => {
@@ -256,6 +256,43 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+const updateUser = async (req, res, next) => {
+  try {
+    let data = {
+      name: req.body.name,
+      phone_number: req.body.phone_number,
+      bio: req.body.bio,
+    };
+    const checkExistUser = await usersModel.checkExistUser(req.params.id, 'user_id');
+    if (checkExistUser.length > 0) {
+      if (req.body.email) {
+        data = { ...data, email: req.body.email };
+      }
+      if (req.body.username) {
+        data = { ...data, username: req.body.username };
+      }
+      if (req.files) {
+        createFolderImg('/public/img/profile_img');
+        if (checkExistUser[0].profile_img && checkExistUser[0].profile_img.length > 10) {
+          fs.unlink(path.join(path.dirname(''), `/${checkExistUser[0].profile_img}`));
+        }
+        const fileName = uuidv4() + path.extname(req.files.profile_img.name);
+        const savePath = path.join(path.dirname(''), '/public/img/profile_img', fileName);
+        data = { ...data, profile_img: `public/img/profile_img/${fileName}` };
+        await req.files.profile_img.mv(savePath);
+      }
+      const changeDataUser = await usersModel.updateUser(data, req.params.id);
+      if (changeDataUser.affectedRows) {
+        response(res, 'success', 200, 'successfully updated user data', data);
+      }
+    } else {
+      response(res, 'failed', 404, 'the data you want to update does not exist', []);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   verifEmail,
@@ -266,4 +303,5 @@ export default {
   refreshToken,
   forgotPassword,
   resetPassword,
+  updateUser,
 };

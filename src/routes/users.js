@@ -14,6 +14,7 @@ router
   .post('/login', ValidationUsers('login'), ControllerUsers.login)
   .post('/refreshtoken', ControllerUsers.refreshToken)
   .post('/forgot-password', ValidationUsers('forgot-password'), ControllerUsers.forgotPassword)
-  .post('/reset-password', ValidationUsers('reset-password'), ControllerUsers.resetPassword);
+  .post('/reset-password', ValidationUsers('reset-password'), ControllerUsers.resetPassword)
+  .post('/:id', Auth, ValidationUsers('update'), ControllerUsers.updateUser);
 
 export default router;
