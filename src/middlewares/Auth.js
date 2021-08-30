@@ -3,7 +3,7 @@ import { responseError } from '../helpers/helpers.js';
 
 export const Auth = (req, res, next) => {
   try {
-    const token = req.cookies.authVehicleRental;
+    const token = req.cookies.authTelegram;
     if (!token) {
       return responseError(res, 'Authorized failed', 401, 'Server need accessToken', []);
     }
