@@ -173,12 +173,13 @@ const refreshToken = async (req, res, next) => {
     Jwt.verify(token.refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decode) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
-          responseError(res, 'Authorized failed', 401, 'token expired', []);
-        } else if (err.name === 'JsonWebTokenError') {
-          responseError(res, 'Authorized failed', 401, 'token invalid', []);
-        } else {
-          responseError(res, 'Authorized failed', 401, 'token not active', []);
+          res.clearCookie('authTelegram');
+          return responseError(res, 'Authorized failed', 401, 'refreshToken expired', []);
         }
+        if (err.name === 'JsonWebTokenError') {
+          return responseError(res, 'Authorized failed', 401, 'token invalid', []);
+        }
+        return responseError(res, 'Authorized failed', 401, 'token not active', []);
       }
       // eslint-disable-next-line no-unused-vars
       const cacheRefToken = redis.get(`jwtRefToken-${decode.user_id}`, async (error, cacheToken) => {
