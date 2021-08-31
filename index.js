@@ -9,6 +9,7 @@ import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
 import { responseError } from './src/helpers/helpers.js';
 import usersRouter from './src/routes/users.js';
+import contactsRouter from './src/routes/contacts.js';
 
 const app = express();
 const port = process.env.PORT_APPLICATION;
@@ -39,6 +40,7 @@ app.use((req, res, next) => {
 app.use(cookieParser());
 app.use(express.json());
 app.use('/users', usersRouter);
+app.use('/contacts', contactsRouter);
 app.use('*', (req, res, next) => {
   next(new Error('Endpoint Not Found'));
 });
