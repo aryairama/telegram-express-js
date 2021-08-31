@@ -15,6 +15,7 @@ router
   .post('/refreshtoken', ControllerUsers.refreshToken)
   .post('/forgot-password', ValidationUsers('forgot-password'), ControllerUsers.forgotPassword)
   .post('/reset-password', ValidationUsers('reset-password'), ControllerUsers.resetPassword)
+  .patch('/update-password', Auth, ValidationUsers('update-password'), ControllerUsers.updatePassword)
   .post('/:id', Auth, ValidationUsers('update'), ControllerUsers.updateUser);
 
 export default router;

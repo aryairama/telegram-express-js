@@ -176,6 +176,21 @@ const rulesRead = () => [
     .withMessage('fieldOrder must be more than 0'),
 ];
 
+const changePassword = () => [
+  body('new_password')
+    .notEmpty()
+    .withMessage('new_password is required')
+    .bail()
+    .isLength({ min: 8, max: 255 })
+    .withMessage('new_password length between 8 to 255'),
+  body('old_password')
+    .notEmpty()
+    .withMessage('old_password is required')
+    .bail()
+    .isLength({ min: 8, max: 255 })
+    .withMessage('old_password length between 8 to 255'),
+];
+
 const validate = (method) => {
   if (method === 'register') {
     return [rulesRegister(), rulesCreatePassword(), rulesCreateEmail(), validateResult];
@@ -212,6 +227,9 @@ const validate = (method) => {
   }
   if (method === 'reset-password') {
     return [rulesCreatePassword(), validateResult];
+  }
+  if (method === 'update-password') {
+    return [changePassword(), validateResult];
   }
 };
 
