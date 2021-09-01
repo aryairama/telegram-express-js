@@ -7,16 +7,25 @@ import fileUpload from 'express-fileupload';
 import cookieParser from 'cookie-parser';
 import { Server, Socket } from 'socket.io';
 import { createServer } from 'http';
+import ioCookieParser from 'socket.io-cookie-parser';
 import { responseError } from './src/helpers/helpers.js';
 import usersRouter from './src/routes/users.js';
 import contactsRouter from './src/routes/contacts.js';
+import CookieAuth from './src/middlewares/CookieAuth.js';
 
 const app = express();
 const port = process.env.PORT_APPLICATION;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: '*',
+    credentials: JSON.parse(process.env.CREDENTIALS),
+    origin(origin, callback) {
+      if (process.env.CORS_ORIGIN.indexOf(origin) !== -1 || origin === undefined) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
   },
 });
 app.use('/public', express.static(path.resolve('./public')));
@@ -47,8 +56,10 @@ app.use('*', (req, res, next) => {
 app.use((err, req, res, next) => {
   responseError(res, 'Error', 500, err.message, []);
 });
-io.on('connection', (steam) => {
-  console.log('ada connection');
+io.use(ioCookieParser());
+io.use(CookieAuth);
+io.on('connection', (socket) => {
+  console.log(`user connected with user id ${socket.id}`);
 });
 httpServer.listen(port, () => {
   console.log(`Server running port ${port}`);
