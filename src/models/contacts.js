@@ -19,7 +19,7 @@ const privateContact = (search, order, fieldOrder, userId, start = '', limit = '
     connection.query(
       `SELECT contacts.*,
     (SELECT name FROM users where user_id = contacts.owner_id ) AS owner_contact_name,
-    users.name,users.email,users.username,users.phone_number,users.bio,users.profile_img
+    users.user_id,users.name,users.email,users.username,users.phone_number,users.bio,users.profile_img
     FROM contacts INNER JOIN users ON contacts.contact_user_id = users.user_id
     WHERE (users.name LIKE "%${search}%" OR users.username LIKE "%${search}%" OR users.phone_number LIKE "%${search}%")
     AND contacts.owner_id = ${userId}
@@ -32,7 +32,7 @@ const privateContact = (search, order, fieldOrder, userId, start = '', limit = '
     connection.query(
       `SELECT contacts.*,
     (SELECT name FROM users where user_id = contacts.owner_id ) AS owner_contact_name,
-    users.name,users.email,users.username,users.phone_number,users.bio,users.profile_img
+    users.user_id,users.name,users.email,users.username,users.phone_number,users.bio,users.profile_img
     FROM contacts INNER JOIN users ON contacts.contact_user_id = users.user_id
     WHERE (users.name LIKE "%${search}%" OR users.username LIKE "%${search}%" OR users.phone_number LIKE "%${search}%")
     AND contacts.owner_id = ${userId}

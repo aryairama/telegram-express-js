@@ -11,7 +11,9 @@ import ioCookieParser from 'socket.io-cookie-parser';
 import { responseError } from './src/helpers/helpers.js';
 import usersRouter from './src/routes/users.js';
 import contactsRouter from './src/routes/contacts.js';
+import messagesRouter from './src/routes/messages.js';
 import CookieAuth from './src/middlewares/CookieAuth.js';
+import listenSocket from './src/socket/index.js';
 
 const app = express();
 const port = process.env.PORT_APPLICATION;
@@ -50,6 +52,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use('/users', usersRouter);
 app.use('/contacts', contactsRouter);
+app.use('/messages', messagesRouter);
 app.use('*', (req, res, next) => {
   next(new Error('Endpoint Not Found'));
 });
@@ -58,9 +61,7 @@ app.use((err, req, res, next) => {
 });
 io.use(ioCookieParser());
 io.use(CookieAuth);
-io.on('connection', (socket) => {
-  console.log(`user connected with user id ${socket.id}`);
-});
+listenSocket(io);
 httpServer.listen(port, () => {
   console.log(`Server running port ${port}`);
 });
