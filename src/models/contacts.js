@@ -66,8 +66,29 @@ const publicContact = (search, order, fieldOrder, exceptUserId, start = '', limi
   }
 });
 
+const addContact = (data) => new Promise((resolve, reject) => {
+  connection.query('INSERT INTO contacts set ?', data, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
+const deleteContact = (id) => new Promise((resolve, reject) => {
+  connection.query('DELETE FROM contacts where contact_id = ?', id, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
+const checkExistContact = (fieldValue, field) => new Promise((resolve, reject) => {
+  connection.query(`SELECT * FROM contacts where ${field} = ?`, fieldValue, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
 export default {
   getContactById,
   privateContact,
   publicContact,
+  addContact,
+  deleteContact,
+  checkExistContact,
 };

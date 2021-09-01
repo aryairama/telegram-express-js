@@ -1,5 +1,6 @@
 import contactsModel from '../models/contacts.js';
-import { response, responsePagination } from '../helpers/helpers.js';
+import usersModel from '../models/users.js';
+import { response, responseError, responsePagination } from '../helpers/helpers.js';
 
 const readContact = async (req, res, next) => {
   const search = req.query.search || '';
@@ -29,9 +30,7 @@ const readContact = async (req, res, next) => {
     });
     let dataContacts;
     let pagination;
-    const lengthRecord = Object.keys(
-      await contactsModel.publicContact(search, order, fieldOrder, contactsId),
-    ).length;
+    const lengthRecord = Object.keys(await contactsModel.publicContact(search, order, fieldOrder, contactsId)).length;
     if (lengthRecord > 0) {
       const limit = req.query.limit || 5;
       const pages = Math.ceil(lengthRecord / limit);
@@ -58,14 +57,7 @@ const readContact = async (req, res, next) => {
         nextPage,
         prevPage,
       };
-      dataContacts = await contactsModel.publicContact(
-        search,
-        order,
-        fieldOrder,
-        contactsId,
-        start,
-        limit,
-      );
+      dataContacts = await contactsModel.publicContact(search, order, fieldOrder, contactsId, start, limit);
       responsePagination(res, 'success', 200, 'data public contacts', dataContacts, pagination);
     } else {
       dataContacts = await contactsModel.publicContact(search, order, fieldOrder, contactsId);
@@ -139,4 +131,45 @@ const privateContact = async (req, res, next) => {
   }
 };
 
-export default { readContact, privateContact };
+const addContact = async (req, res, next) => {
+  try {
+    const checkExistUser = await usersModel.checkExistUser(req.body.user_id, 'user_id');
+    if (checkExistUser.length > 0) {
+      const data = {
+        owner_id: req.userLogin.user_id,
+        contact_user_id: req.body.user_id,
+      };
+      const addDataContact = await contactsModel.addContact(data);
+      if (addDataContact.affectedRows) {
+        response(res, 'success', 200, 'successfully added contact data', data);
+      }
+    } else {
+      responseError(res, 'failed', 404, 'User not found', {});
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteContact = async (req, res, next) => {
+  try {
+    const checkExistContact = await contactsModel.checkExistContact(req.params.contact_id, 'contact_id ');
+    if (checkExistContact.length > 0) {
+      const deleteDataContact = await contactsModel.deleteContact(req.params.contact_id);
+      if (deleteDataContact.affectedRows) {
+        response(res, 'success', 200, 'successfully delete contact data', {});
+      }
+    } else {
+      responseError(res, 'failed', 404, 'data contact not found', {});
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  readContact,
+  privateContact,
+  addContact,
+  deleteContact,
+};
