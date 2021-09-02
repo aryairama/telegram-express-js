@@ -131,6 +131,69 @@ const privateContact = async (req, res, next) => {
   }
 };
 
+const listContactMessage = async (req, res, next) => {
+  const search = req.query.search || '';
+  let order = req.query.order || '';
+  if (order.toUpperCase() === 'ASC') {
+    order = 'ASC';
+  } else if (order.toUpperCase() === 'DESC') {
+    order = 'DESC';
+  } else {
+    order = 'DESC';
+  }
+  let { fieldOrder } = req.query;
+  if (fieldOrder) {
+    if (fieldOrder.toLowerCase() === 'name') {
+      fieldOrder = 'users.name';
+    } else {
+      fieldOrder = 'current_create_message';
+    }
+  } else {
+    fieldOrder = 'current_create_message';
+  }
+  try {
+    let dataContacts;
+    let pagination;
+    const lengthRecord = Object.keys(
+      await contactsModel.listContactMessage(search, order, fieldOrder, req.userLogin.user_id),
+    ).length;
+    if (lengthRecord > 0) {
+      const limit = req.query.limit || 5;
+      const pages = Math.ceil(lengthRecord / limit);
+      let page = req.query.page || 1;
+      let nextPage = parseInt(page, 10) + 1;
+      let prevPage = parseInt(page, 10) - 1;
+      if (nextPage > pages) {
+        nextPage = pages;
+      }
+      if (prevPage < 1) {
+        prevPage = 1;
+      }
+      if (page > pages) {
+        page = pages;
+      } else if (page < 1) {
+        page = 1;
+      }
+      const start = (page - 1) * limit;
+      pagination = {
+        countData: lengthRecord,
+        pages,
+        limit: parseInt(limit, 10),
+        curentPage: parseInt(page, 10),
+        nextPage,
+        prevPage,
+      };
+      dataContacts = await contactsModel.listContactMessage(search, order, fieldOrder, req.userLogin.user_id, start, limit);
+      responsePagination(res, 'success', 200, 'data list contact messages', dataContacts, pagination);
+    } else {
+      dataContacts = await contactsModel.listContactMessage(search, order, fieldOrder, req.userLogin.user_id);
+      response(res, 'success', 200, 'data list contact messages', dataContacts);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 const addContact = async (req, res, next) => {
   try {
     const checkExistUser = await usersModel.checkExistUser(req.body.user_id, 'user_id');
@@ -172,4 +235,5 @@ export default {
   privateContact,
   addContact,
   deleteContact,
+  listContactMessage,
 };

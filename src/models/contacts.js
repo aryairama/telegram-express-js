@@ -84,6 +84,48 @@ const checkExistContact = (fieldValue, field) => new Promise((resolve, reject) =
   });
 });
 
+const listContactMessage = (search, order, fieldOrder, userLogin, start = '', limit = '') => new Promise((resolve, reject) => {
+  if (limit !== '' && start !== '') {
+    connection.query(
+      `SELECT DISTINCT contacts.contact_id,
+      users.user_id,users.name,users.email,
+      users.username,users.phone_number,users.bio,users.profile_img,
+      (SELECT COUNT(*) FROM messages where (read_message = 0) AND (receiver_id = '${userLogin}' AND sender_id = users.user_id)) AS unread,
+      (SELECT message FROM messages where (receiver_id = '${userLogin}' AND sender_id = users.user_id) 
+      OR (receiver_id = users.user_id AND sender_id = '${userLogin}') ORDER BY created_at DESC LIMIT 1) AS current_message,
+      (SELECT created_at FROM messages where (receiver_id = '${userLogin}' AND sender_id = users.user_id) 
+      OR (receiver_id = users.user_id AND sender_id = '${userLogin}') ORDER BY created_at DESC LIMIT 1) AS current_create_message
+      FROM users INNER JOIN messages on (users.user_id = messages.sender_id OR users.user_id = messages.receiver_id)
+      LEFT JOIN contacts ON contacts.owner_id = ${userLogin} AND contacts.contact_user_id = users.user_id
+      WHERE (users.name LIKE "%${search}%" OR users.username LIKE "%${search}%" OR users.phone_number LIKE "%${search}%")
+      AND (messages.receiver_id = ${userLogin} OR messages.sender_id = ${userLogin}) AND users.user_id != ${userLogin}
+      ORDER BY ${fieldOrder} ${order} LIMIT ${start} , ${limit}`,
+      (error, result) => {
+        promiseResolveReject(resolve, reject, error, result);
+      },
+    );
+  } else {
+    connection.query(
+      `SELECT DISTINCT contacts.contact_id,
+      users.user_id,users.name,users.email,
+      users.username,users.phone_number,users.bio,users.profile_img,
+      (SELECT COUNT(*) FROM messages where (read_message = 0) AND (receiver_id = '${userLogin}' AND sender_id = users.user_id)) AS unread,
+      (SELECT message FROM messages where (receiver_id = '${userLogin}' AND sender_id = users.user_id) 
+      OR (receiver_id = users.user_id AND sender_id = '${userLogin}') ORDER BY created_at DESC LIMIT 1) AS current_message,
+      (SELECT created_at FROM messages where (receiver_id = '${userLogin}' AND sender_id = users.user_id) 
+      OR (receiver_id = users.user_id AND sender_id = '${userLogin}') ORDER BY created_at DESC LIMIT 1) AS current_create_message
+      FROM users INNER JOIN messages on (users.user_id = messages.sender_id OR users.user_id = messages.receiver_id)
+      LEFT JOIN contacts ON contacts.owner_id = ${userLogin} AND contacts.contact_user_id = users.user_id
+      WHERE (users.name LIKE "%${search}%" OR users.username LIKE "%${search}%" OR users.phone_number LIKE "%${search}%")
+      AND (messages.receiver_id = ${userLogin} OR messages.sender_id = ${userLogin}) AND users.user_id != ${userLogin}
+      ORDER BY ${fieldOrder} ${order} `,
+      (error, result) => {
+        promiseResolveReject(resolve, reject, error, result);
+      },
+    );
+  }
+});
+
 export default {
   getContactById,
   privateContact,
@@ -91,4 +133,5 @@ export default {
   addContact,
   deleteContact,
   checkExistContact,
+  listContactMessage,
 };
