@@ -14,6 +14,8 @@ const listenSocket = (io) => {
           callback(data);
           data.sender_name = senderMame[0].name;
           socket.broadcast.to(`chatuserid:${data.receiver_id}`).emit('replySendMessageBE', data);
+          socket.broadcast.to(`chatuserid:${data.receiver_id}`).emit('reloadContact', true);
+          io.in(`chatuserid:${socket.id}`).emit('reloadContact', true);
         }
       } catch (error) {
         console.log(error);
