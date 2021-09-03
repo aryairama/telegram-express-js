@@ -151,11 +151,12 @@ const login = async (req, res, next) => {
 const logout = (req, res, next) => {
   try {
     // eslint-disable-next-line no-unused-vars
-    redis.del(`jwtRefToken-${req.userLogin.user_id}`, (error, result) => {
+    redis.del(`jwtRefToken-${req.userLogin.user_id}`, async (error, result) => {
       if (error) {
         next(error);
       } else {
         res.clearCookie('authTelegram');
+        await usersModel.updateUser({ online: 0 }, req.userLogin.user_id);
         req.io.emit('status_offline', { user_id: req.userLogin.user_id });
         response(res, 'Logout', 200, 'Logout success', []);
       }
@@ -319,6 +320,19 @@ const updatePassword = async (req, res, next) => {
   }
 };
 
+const getStatus = async (req, res, next) => {
+  try {
+    const dataStatus = await usersModel.checkExistUser(req.params.id, 'user_id');
+    if (dataStatus.length > 0) {
+      response(res, 'Data Status', 200, 'Data status Online/Offline', { online: dataStatus[0].online });
+    } else {
+      response(res, 'failed', 404, 'user not found', {});
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   register,
   verifEmail,
@@ -331,4 +345,5 @@ export default {
   resetPassword,
   updateUser,
   updatePassword,
+  getStatus,
 };

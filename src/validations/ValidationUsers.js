@@ -231,6 +231,9 @@ const validate = (method) => {
   if (method === 'update-password') {
     return [changePassword(), validateResult];
   }
+  if (method === 'status') {
+    return [rulesReadUpdateDelete(), validateResult];
+  }
 };
 
 export default validate;
