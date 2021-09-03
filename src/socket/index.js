@@ -3,7 +3,9 @@ import messagesModel from '../models/messages.js';
 import usersModel from '../models/users.js';
 
 const listenSocket = (io) => {
-  io.on('connection', (socket) => {
+  io.on('connection', async (socket) => {
+    await usersModel.updateUser({ online: 1 }, socket.id);
+    socket.broadcast.emit('status_online', { user_id: socket.id });
     socket.on('sendMessageFR', async (data, callback) => {
       try {
         data.message_id = uuidv4();
@@ -21,7 +23,14 @@ const listenSocket = (io) => {
         console.log(error);
       }
     });
-    console.log(`user connected with user id ${socket.id}`);
+    socket.on('reconnect', async () => {
+      await usersModel.updateUser({ online: 0 }, socket.id);
+      socket.broadcast.emit('status_online', { user_id: socket.id });
+    });
+    socket.on('disconnect', async () => {
+      await usersModel.updateUser({ online: 0 }, socket.id);
+      socket.broadcast.emit('status_offline', { user_id: socket.id });
+    });
   });
 };
 

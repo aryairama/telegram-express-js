@@ -156,6 +156,7 @@ const logout = (req, res, next) => {
         next(error);
       } else {
         res.clearCookie('authTelegram');
+        req.io.emit('status_offline', { user_id: req.userLogin.user_id });
         response(res, 'Logout', 200, 'Logout success', []);
       }
     });
