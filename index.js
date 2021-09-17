@@ -16,7 +16,7 @@ const CookieAuth = require('./src/middlewares/CookieAuth');
 const listenSocket = require('./src/socket/index');
 
 const app = express();
-const port = process.env.PORT_APPLICATION;
+const port = process.env.PORT;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
