@@ -1,5 +1,5 @@
 const messagesModel = require('../models/messages');
-const { response } = require('../helpers/helpers');
+const { response, responseError } = require('../helpers/helpers');
 
 const readMessage = async (req, res, next) => {
   try {
@@ -10,4 +10,24 @@ const readMessage = async (req, res, next) => {
   }
 };
 
-module.exports = { readMessage };
+const deleteMessage = async (req, res, next) => {
+  try {
+    const checkExistMessage = await messagesModel.checkExistMessage(req.params.id, 'message_id');
+    if (checkExistMessage.length > 0) {
+      const deleteDataMessage = await messagesModel.deleteMessage(req.params.id);
+      if (deleteDataMessage.affectedRows) {
+        req.io.in(`chatuserid:${checkExistMessage[0].sender_id}`).emit('reloadContact', true);
+        req.io.in(`chatuserid:${checkExistMessage[0].receiver_id}`).emit('reloadContact', true);
+        response(res, 'success', 200, 'successfully delete message data', {});
+      } else {
+        responseError(res, 'failed', 500, 'failed delete message', {});
+      }
+    } else {
+      responseError(res, 'failed', 404, 'data message not found', {});
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { readMessage, deleteMessage };

@@ -17,4 +17,18 @@ const readMessage = (idReceiver, idSender) => new Promise((resolve, reject) => {
   );
 });
 
-module.exports = { addMessage, readMessage };
+const checkExistMessage = (fieldValue, field) => new Promise((resolve, reject) => {
+  connection.query(`SELECT * FROM messages WHERE ${field} = ?`, fieldValue, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
+const deleteMessage = (idMessage) => new Promise((resolve, reject) => {
+  connection.query('DELETE FROM messages WHERE message_id = ?', idMessage, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
+module.exports = {
+  addMessage, readMessage, checkExistMessage, deleteMessage,
+};
