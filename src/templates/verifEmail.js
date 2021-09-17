@@ -93,4 +93,4 @@ const verifEmail = (token, name) => `
 
 </html>`;
 
-export default verifEmail;
+module.exports = verifEmail;

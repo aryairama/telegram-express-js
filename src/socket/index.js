@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from 'uuid';
-import messagesModel from '../models/messages.js';
-import usersModel from '../models/users.js';
+const { v4: uuidv4 } = require('uuid');
+const messagesModel = require('../models/messages');
+const usersModel = require('../models/users');
 
 const listenSocket = (io) => {
   io.on('connection', async (socket) => {
@@ -34,4 +34,4 @@ const listenSocket = (io) => {
   });
 };
 
-export default listenSocket;
+module.exports = listenSocket;

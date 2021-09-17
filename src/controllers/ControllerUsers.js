@@ -1,12 +1,12 @@
-import bcrypt from 'bcrypt';
-import path from 'path';
-import fs from 'fs/promises';
-import Jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
-import usersModel from '../models/users.js';
-import { redis } from '../configs/redis.js';
-import { genAccessToken, genRefreshToken, genVerifEmailToken } from '../helpers/jwt.js';
-import {
+const bcrypt = require('bcrypt');
+const path = require('path');
+const fs = require('fs/promises');
+const Jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require('uuid');
+const usersModel = require('../models/users');
+const { redis } = require('../configs/redis');
+const { genAccessToken, genRefreshToken, genVerifEmailToken } = require('../helpers/jwt');
+const {
   response,
   responseError,
   // responsePagination,
@@ -14,7 +14,7 @@ import {
   sendVerifEmailRegister,
   sendResetPassword,
   createFolderImg,
-} from '../helpers/helpers.js';
+} = require('../helpers/helpers');
 
 const register = async (req, res, next) => {
   try {
@@ -333,7 +333,7 @@ const getStatus = async (req, res, next) => {
   }
 };
 
-export default {
+module.exports = {
   register,
   verifEmail,
   checkToken,

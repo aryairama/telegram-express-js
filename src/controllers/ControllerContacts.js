@@ -1,6 +1,6 @@
-import contactsModel from '../models/contacts.js';
-import usersModel from '../models/users.js';
-import { response, responseError, responsePagination } from '../helpers/helpers.js';
+const contactsModel = require('../models/contacts');
+const usersModel = require('../models/users');
+const { response, responseError, responsePagination } = require('../helpers/helpers');
 
 const readContact = async (req, res, next) => {
   const search = req.query.search || '';
@@ -230,7 +230,7 @@ const deleteContact = async (req, res, next) => {
   }
 };
 
-export default {
+module.exports = {
   readContact,
   privateContact,
   addContact,

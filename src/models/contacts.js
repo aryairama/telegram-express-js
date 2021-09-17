@@ -1,5 +1,5 @@
-import connection from '../configs/db.js';
-import { promiseResolveReject } from '../helpers/helpers.js';
+const connection = require('../configs/db');
+const { promiseResolveReject } = require('../helpers/helpers');
 
 const getContactById = (id) => new Promise((resolve, reject) => {
   connection.query(
@@ -126,7 +126,7 @@ const listContactMessage = (search, order, fieldOrder, userLogin, start = '', li
   }
 });
 
-export default {
+module.exports = {
   getContactById,
   privateContact,
   publicContact,

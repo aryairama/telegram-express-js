@@ -1,7 +1,7 @@
-import Jwt from 'jsonwebtoken';
-import { responseError } from '../helpers/helpers.js';
+const Jwt = require('jsonwebtoken');
+const { responseError } = require('../helpers/helpers');
 
-export const Auth = (req, res, next) => {
+const Auth = (req, res, next) => {
   try {
     const token = req.cookies.authTelegram;
     if (!token) {
@@ -25,7 +25,7 @@ export const Auth = (req, res, next) => {
   }
 };
 
-export const Role = (...roles) => (req, res, next) => {
+const Role = (...roles) => (req, res, next) => {
   let accesDenied = 0;
   for (let i = 0; i < roles.length; i += 1) {
     if (req.userLogin.roles !== roles[i]) {
@@ -41,3 +41,5 @@ export const Role = (...roles) => (req, res, next) => {
     responseError(res, 'Access Denied', 403, 'You do not have permission for this service', []);
   }
 };
+
+module.exports = { Auth, Role };

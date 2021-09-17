@@ -1,5 +1,5 @@
-import connection from '../configs/db.js';
-import { promiseResolveReject } from '../helpers/helpers.js';
+const connection = require('../configs/db');
+const { promiseResolveReject } = require('../helpers/helpers');
 
 const addMessage = (data) => new Promise((resolve, reject) => {
   connection.query('INSERT INTO messages set ?', data, (error, result) => {
@@ -16,4 +16,5 @@ const readMessage = (idReceiver, idSender) => new Promise((resolve, reject) => {
     },
   );
 });
-export default { addMessage, readMessage };
+
+module.exports = { addMessage, readMessage };

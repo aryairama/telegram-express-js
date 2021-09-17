@@ -1,5 +1,5 @@
-import connection from '../configs/db.js';
-import { promiseResolveReject } from '../helpers/helpers.js';
+const connection = require('../configs/db');
+const { promiseResolveReject } = require('../helpers/helpers');
 
 const checkExistUser = (fieldValue, field) => new Promise((resolve, reject) => {
   connection.query(`SELECT * FROM users where ${field} = ?`, fieldValue, (error, result) => {
@@ -37,7 +37,7 @@ const readUser = (search, order, fieldOrder, start = '', limit = '') => new Prom
   }
 });
 
-export default {
+module.exports = {
   checkExistUser,
   insertUser,
   updateUser,

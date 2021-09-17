@@ -1,7 +1,7 @@
-import express from 'express';
-import ControllerContacts from '../controllers/ControllerContacts.js';
-import ValidationContacts from '../validations/ValidationContacts.js';
-import { Auth } from '../middlewares/Auth.js';
+const express = require('express');
+const ControllerContacts = require('../controllers/ControllerContacts');
+const ValidationContacts = require('../validations/ValidationContacts');
+const { Auth } = require('../middlewares/Auth');
 
 const router = express.Router();
 
@@ -12,4 +12,4 @@ router
   .get('/list-contact', Auth, ValidationContacts('read'), ControllerContacts.listContactMessage)
   .get('/private', Auth, ValidationContacts('read'), ControllerContacts.privateContact);
 
-export default router;
+module.exports = router;

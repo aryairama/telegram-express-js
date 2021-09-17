@@ -1,5 +1,5 @@
-import messagesModel from '../models/messages.js';
-import { response } from '../helpers/helpers.js';
+const messagesModel = require('../models/messages');
+const { response } = require('../helpers/helpers');
 
 const readMessage = async (req, res, next) => {
   try {
@@ -10,4 +10,4 @@ const readMessage = async (req, res, next) => {
   }
 };
 
-export default { readMessage };
+module.exports = { readMessage };

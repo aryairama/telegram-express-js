@@ -1,19 +1,19 @@
 /* eslint-disable no-unused-vars */
-import express from 'express';
-import path from 'path';
-import 'dotenv/config';
-import cors from 'cors';
-import fileUpload from 'express-fileupload';
-import cookieParser from 'cookie-parser';
-import { Server, Socket } from 'socket.io';
-import { createServer } from 'http';
-import ioCookieParser from 'socket.io-cookie-parser';
-import { responseError } from './src/helpers/helpers.js';
-import usersRouter from './src/routes/users.js';
-import contactsRouter from './src/routes/contacts.js';
-import messagesRouter from './src/routes/messages.js';
-import CookieAuth from './src/middlewares/CookieAuth.js';
-import listenSocket from './src/socket/index.js';
+const express = require('express');
+const path = require('path');
+require('dotenv').config();
+const cors = require('cors');
+const fileUpload = require('express-fileupload');
+const cookieParser = require('cookie-parser');
+const { Server, Socket } = require('socket.io');
+const { createServer } = require('http');
+const ioCookieParser = require('socket.io-cookie-parser');
+const { responseError } = require('./src/helpers/helpers');
+const usersRouter = require('./src/routes/users');
+const contactsRouter = require('./src/routes/contacts');
+const messagesRouter = require('./src/routes/messages');
+const CookieAuth = require('./src/middlewares/CookieAuth');
+const listenSocket = require('./src/socket/index');
 
 const app = express();
 const port = process.env.PORT_APPLICATION;

@@ -1,7 +1,7 @@
-import express from 'express';
-import ControllerUsers from '../controllers/ControllerUsers.js';
-import ValidationUsers from '../validations/ValidationUsers.js';
-import { Auth } from '../middlewares/Auth.js';
+const express = require('express');
+const ControllerUsers = require('../controllers/ControllerUsers');
+const ValidationUsers = require('../validations/ValidationUsers');
+const { Auth } = require('../middlewares/Auth');
 
 const router = express.Router();
 
@@ -19,4 +19,4 @@ router
   .post('/:id', Auth, ValidationUsers('update'), ControllerUsers.updateUser)
   .get('/status/:id', Auth, ValidationUsers('status'), ControllerUsers.getStatus);
 
-export default router;
+module.exports = router;
