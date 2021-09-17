@@ -30,4 +30,18 @@ const deleteMessage = async (req, res, next) => {
   }
 };
 
-module.exports = { readMessage, deleteMessage };
+const readStatusMessages = async (req, res, next) => {
+  try {
+    const unreadMessages = await messagesModel.unreadMessages(req.body.sender_id, req.body.receiver_id);
+    const unreadMessageid = unreadMessages.map((unreadMessage) => unreadMessage.message_id);
+    if (unreadMessageid.length > 0) {
+      await messagesModel.updateUnreadToReadMessages('1', unreadMessageid);
+      req.io.in(`chatuserid:${req.userLogin.user_id}`).emit('reloadContact', true);
+    }
+    response(res, 'update status message', 200, 'update unread message to read message', []);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { readMessage, deleteMessage, readStatusMessages };

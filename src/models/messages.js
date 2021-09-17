@@ -1,3 +1,4 @@
+const mysql = require('mysql2');
 const connection = require('../configs/db');
 const { promiseResolveReject } = require('../helpers/helpers');
 
@@ -29,6 +30,30 @@ const deleteMessage = (idMessage) => new Promise((resolve, reject) => {
   });
 });
 
+const unreadMessages = (senderId, receiverId) => new Promise((resolve, reject) => {
+  connection.query(
+    `SELECT * FROM messages where (read_message = 0) AND (receiver_id = '${receiverId}' AND sender_id = ${senderId})`,
+    (error, result) => {
+      promiseResolveReject(resolve, reject, error, result);
+    },
+  );
+});
+
+const updateUnreadToReadMessages = (status, messageId) => new Promise((resolve, reject) => {
+  let query = '';
+  messageId.forEach((id) => {
+    query += mysql.format(`UPDATE messages SET read_message = ${status} WHERE message_id = ?;`, id);
+  });
+  connection.query(query, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
 module.exports = {
-  addMessage, readMessage, checkExistMessage, deleteMessage,
+  addMessage,
+  readMessage,
+  checkExistMessage,
+  deleteMessage,
+  unreadMessages,
+  updateUnreadToReadMessages,
 };
