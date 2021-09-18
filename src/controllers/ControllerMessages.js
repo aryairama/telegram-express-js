@@ -18,6 +18,10 @@ const deleteMessage = async (req, res, next) => {
       if (deleteDataMessage.affectedRows) {
         req.io.in(`chatuserid:${checkExistMessage[0].sender_id}`).emit('reloadContact', true);
         req.io.in(`chatuserid:${checkExistMessage[0].receiver_id}`).emit('reloadContact', true);
+        req.io.in(`chatuserid:${checkExistMessage[0].receiver_id}`).emit('replyDeleteChat', {
+          receiver_id: checkExistMessage[0].receiver_id,
+          sender_id: checkExistMessage[0].sender_id,
+        });
         response(res, 'success', 200, 'successfully delete message data', {});
       } else {
         responseError(res, 'failed', 500, 'failed delete message', {});
