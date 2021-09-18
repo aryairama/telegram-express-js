@@ -37,9 +37,16 @@ const readUser = (search, order, fieldOrder, start = '', limit = '') => new Prom
   }
 });
 
+const deleteAccount = (userId) => new Promise((resolve, reject) => {
+  connection.query('DELETE FROM users WHERE user_id = ?', userId, (error, result) => {
+    promiseResolveReject(resolve, reject, error, result);
+  });
+});
+
 module.exports = {
   checkExistUser,
   insertUser,
   updateUser,
   readUser,
+  deleteAccount,
 };

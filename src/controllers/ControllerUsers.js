@@ -346,6 +346,33 @@ const getStatus = async (req, res, next) => {
   }
 };
 
+const deleteAccount = async (req, res, next) => {
+  try {
+    const checkExistUser = await usersModel.checkExistUser(req.body.user_id, 'user_id');
+    if (checkExistUser.length > 0) {
+      const deleteDataUser = await usersModel.deleteAccount(req.body.user_id);
+      if (deleteDataUser.affectedRows) {
+        if (checkExistUser[0].profile_img && checkExistUser[0].profile_img.length > 10) {
+          fs.unlink(path.join(path.dirname(''), `/${checkExistUser[0].profile_img}`));
+        }
+        res.clearCookie('authTelegram', {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+        });
+        redis.del(`${process.env.PREFIX_REDIS}jwtRefToken-${req.userLogin.user_id}`);
+        response(res, 'Delete account', 200, 'successfully deleted account', []);
+      } else {
+        responseError(res, 'failed', 404, 'user not found', {});
+      }
+    } else {
+      responseError(res, 'failed', 404, 'user not found', {});
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   verifEmail,
@@ -359,4 +386,5 @@ module.exports = {
   updateUser,
   updatePassword,
   getStatus,
+  deleteAccount,
 };

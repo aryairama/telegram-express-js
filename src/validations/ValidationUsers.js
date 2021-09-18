@@ -234,6 +234,19 @@ const validate = (method) => {
   if (method === 'status') {
     return [rulesReadUpdateDelete(), validateResult];
   }
+  if (method === 'delete') {
+    return [
+      body('user_id')
+        .notEmpty()
+        .withMessage('user_id is required')
+        .bail()
+        .isNumeric()
+        .withMessage('id must be number')
+        .bail()
+        .isInt({ min: 1 })
+        .withMessage('id must be more than 0'),
+    ];
+  }
 };
 
 module.exports = validate;
