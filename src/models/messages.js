@@ -49,6 +49,16 @@ const updateUnreadToReadMessages = (status, messageId) => new Promise((resolve, 
   });
 });
 
+const clearHistory = (idSender, idReceiver) => new Promise((resolve, reject) => {
+  connection.query(
+    `DELETE FROM messages where (receiver_id = '${idReceiver}' AND sender_id = '${idSender}') 
+  OR (receiver_id = '${idSender}' AND sender_id = '${idReceiver}')`,
+    (error, result) => {
+      promiseResolveReject(resolve, reject, error, result);
+    },
+  );
+});
+
 module.exports = {
   addMessage,
   readMessage,
@@ -56,4 +66,5 @@ module.exports = {
   deleteMessage,
   unreadMessages,
   updateUnreadToReadMessages,
+  clearHistory,
 };

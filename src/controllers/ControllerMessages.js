@@ -48,4 +48,30 @@ const readStatusMessages = async (req, res, next) => {
   }
 };
 
-module.exports = { readMessage, deleteMessage, readStatusMessages };
+const clearHistoryMessages = async (req, res, next) => {
+  try {
+    const deleteDataHistory = await messagesModel.clearHistory(req.body.sender_id, req.body.receiver_id);
+    if (deleteDataHistory.affectedRows) {
+      req.io.in(`chatuserid:${req.body.sender_id}`).emit('reloadContact', true);
+      req.io.in(`chatuserid:${req.body.receiver_id}`).emit('reloadContact', true);
+      req.io.in(`chatuserid:${req.body.receiver_id}`).emit('replyClearHistoryChat', {
+        receiver_id: req.body.receiver_id,
+        sender_id: req.body.sender_id,
+      });
+      response(res, 'success', 200, 'successfully delete message data', {});
+    } else if (deleteDataHistory.affectedRows === 0) {
+      response(res, 'success', 200, 'you dont have any message', {});
+    } else {
+      responseError(res, 'failed', 500, 'failed delete message', {});
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  readMessage,
+  deleteMessage,
+  readStatusMessages,
+  clearHistoryMessages,
+};

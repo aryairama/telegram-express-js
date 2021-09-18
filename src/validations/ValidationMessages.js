@@ -19,7 +19,7 @@ const rulesDeleteMessage = () => [
     .withMessage('message_id must be more than 0 character'),
 ];
 
-const rulesReadStatusMessage = () => [
+const rulesReadStatusMessageAndClearHistoryMessages = () => [
   body('sender_id')
     .notEmpty()
     .withMessage('sender_id is required')
@@ -39,7 +39,10 @@ const validate = (method) => {
     return [rulesDeleteMessage(), validateResult];
   }
   if (method === 'readStatusMessages') {
-    return [rulesReadStatusMessage(), validateResult];
+    return [rulesReadStatusMessageAndClearHistoryMessages(), validateResult];
+  }
+  if (method === 'clearHistoryMessages') {
+    return [rulesReadStatusMessageAndClearHistoryMessages(), validateResult];
   }
 };
 

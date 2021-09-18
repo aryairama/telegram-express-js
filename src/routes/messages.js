@@ -8,6 +8,7 @@ const router = express.Router();
 router
   .get('/:receiver_id', Auth, ControllerMessages.readMessage)
   .delete('/:id', Auth, ValidationMessages('delete'), ControllerMessages.deleteMessage)
-  .post('/read', Auth, ValidationMessages('readStatusMessages'), ControllerMessages.readStatusMessages);
+  .post('/read', Auth, ValidationMessages('readStatusMessages'), ControllerMessages.readStatusMessages)
+  .post('/clearhistory', Auth, ValidationMessages('clearHistoryMessages'), ControllerMessages.clearHistoryMessages);
 
 module.exports = router;
