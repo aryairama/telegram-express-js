@@ -180,7 +180,11 @@ const refreshToken = async (req, res, next) => {
     Jwt.verify(token.refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decode) => {
       if (err) {
         if (err.name === 'TokenExpiredError') {
-          res.clearCookie('authTelegram');
+          res.clearCookie('authTelegram', {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+          });
           return responseError(res, 'Authorized failed', 401, 'refreshToken expired', []);
         }
         if (err.name === 'JsonWebTokenError') {
@@ -208,6 +212,7 @@ const refreshToken = async (req, res, next) => {
               {
                 httpOnly: true,
                 secure: true,
+                sameSite: 'none',
               },
             );
           } else {
