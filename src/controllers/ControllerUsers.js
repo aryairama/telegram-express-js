@@ -360,6 +360,8 @@ const deleteAccount = async (req, res, next) => {
           secure: true,
           sameSite: 'none',
         });
+        req.io.emit('reloadContact', true);
+        req.io.emit('replyDeleteAccount', { ...checkExistUser[0] });
         redis.del(`${process.env.PREFIX_REDIS}jwtRefToken-${req.userLogin.user_id}`);
         response(res, 'Delete account', 200, 'successfully deleted account', []);
       } else {
