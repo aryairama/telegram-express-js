@@ -7,7 +7,7 @@
   <p align="center">
     <a href="https://github.com/aryairama/telegram-express-js"><strong>Explore the docs »</strong></a>
     <br />
-    <a href="https://bit.ly/vehicle_rental">View Demo</a>
+    <a href="https://bit.ly/telegram_next">View Demo</a>
     ·
     <a href="https://github.com/aryairama/telegram-express-js/issues">Report Bug</a>
     ·
@@ -60,7 +60,7 @@ This is an example of how to list things you need to use the software and how to
 ### Requirements
 * [Node.js](https://nodejs.org/en/)
 * [Postman](https://www.getpostman.com/) for testing
-* [Database](database-example.sql)
+* [Database](https://drive.google.com/drive/folders/1nck7-vLvJg9aXojJ_SnIKS-h98J7FzsX?usp=sharing)
 
 ### Installation
 
@@ -76,13 +76,11 @@ cd telegram-express-js
 ```
 npm install
 ```
-- Development mode
+- Make a new database and import [telegram.sql](https://drive.google.com/drive/folders/1nck7-vLvJg9aXojJ_SnIKS-h98J7FzsX?usp=sharing)
+- <a href="#setup-env-example">Setup .env</a>
+- Starting application
 ```
 npm run serve
-```
-- Deploy mode
-```
-npm start
 ```
 
 ### Setup .env example
