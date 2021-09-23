@@ -66,7 +66,7 @@ This is an example of how to list things you need to use the software and how to
 
 - Clone This Back End Repo
 ```
-git clone https://github.com/aryairama/telegram-express-js
+git clone https://github.com/aryairama/telegram-express-js.git
 ```
 - Go To Folder Repo
 ```
