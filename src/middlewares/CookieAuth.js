@@ -23,7 +23,7 @@ const CookieAuth = (socket, next) => {
       error.status = 401;
       return next(error);
     }
-    socket.id = decode.user_id;
+    socket.user_id = decode.user_id;
     socket.join(`chatuserid:${decode.user_id}`);
     next();
   });

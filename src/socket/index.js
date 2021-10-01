@@ -4,8 +4,9 @@ const usersModel = require('../models/users');
 
 const listenSocket = (io) => {
   io.on('connection', async (socket) => {
-    await usersModel.updateUser({ online: 1 }, socket.id);
-    socket.broadcast.emit('status_online', { user_id: socket.id });
+    await usersModel.updateUser({ online: 1 }, socket.user_id);
+    socket.join(`chatuserid:${socket.user_id}`);
+    socket.broadcast.emit('status_online', { user_id: socket.user_id });
     socket.on('sendMessageFR', async (data, callback) => {
       try {
         data.message_id = uuidv4();
@@ -19,7 +20,7 @@ const listenSocket = (io) => {
             data.sender_name = senderMame[0].name;
             socket.broadcast.to(`chatuserid:${data.receiver_id}`).emit('replySendMessageBE', data);
             socket.broadcast.to(`chatuserid:${data.receiver_id}`).emit('reloadContact', true);
-            io.in(`chatuserid:${socket.id}`).emit('reloadContact', true);
+            io.in(`chatuserid:${socket.user_id}`).emit('reloadContact', true);
           }
         }
       } catch (error) {
@@ -27,12 +28,12 @@ const listenSocket = (io) => {
       }
     });
     socket.on('reconnect', async () => {
-      await usersModel.updateUser({ online: 0 }, socket.id);
-      socket.broadcast.emit('status_online', { user_id: socket.id });
+      await usersModel.updateUser({ online: 1 }, socket.user_id);
+      socket.broadcast.emit('status_online', { user_id: socket.user_id });
     });
     socket.on('disconnect', async () => {
-      await usersModel.updateUser({ online: 0 }, socket.id);
-      socket.broadcast.emit('status_offline', { user_id: socket.id });
+      await usersModel.updateUser({ online: 0 }, socket.user_id);
+      socket.broadcast.emit('status_offline', { user_id: socket.user_id });
     });
   });
 };
