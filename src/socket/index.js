@@ -29,6 +29,7 @@ const listenSocket = (io) => {
     });
     socket.on('reconnect', async () => {
       await usersModel.updateUser({ online: 1 }, socket.user_id);
+      socket.join(`chatuserid:${socket.user_id}`);
       socket.broadcast.emit('status_online', { user_id: socket.user_id });
     });
     socket.on('disconnect', async () => {
