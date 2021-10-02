@@ -20,6 +20,8 @@ const port = process.env.PORT;
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
+    methods: ['GET', 'POST'],
+    transports: ['websocket', 'polling'],
     credentials: JSON.parse(process.env.CREDENTIALS),
     origin(origin, callback) {
       if (process.env.CORS_ORIGIN.indexOf(origin) !== -1 || origin === undefined) {
@@ -29,6 +31,7 @@ const io = new Server(httpServer, {
       }
     },
   },
+  allowEIO3: true,
 });
 app.use('/public', express.static(path.resolve('./public')));
 app.use(fileUpload());
