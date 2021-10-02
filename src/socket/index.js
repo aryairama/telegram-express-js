@@ -35,7 +35,7 @@ const listenSocket = (io) => {
     socket.on('disconnect', async () => {
       await usersModel.updateUser({ online: 0 }, socket.user_id);
       socket.broadcast.emit('status_offline', { user_id: socket.user_id });
-      io.in(`chatuserid:${socket.user_id}`).emit('disconnect', { user_id: socket.user_id });
+      io.in(`chatuserid:${socket.user_id}`).emit('user-disconnect', { user_id: socket.user_id });
     });
   });
 };
